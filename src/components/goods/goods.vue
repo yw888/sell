@@ -15,7 +15,7 @@
         <li v-for="(item,index) in goods" :key="index" class="foods-list food-list-hook">
           <h1 class="title">{{item.name}}}</h1>
           <ul>
-            <li v-for="(food, index) in item.foods" :key="index" class="food-item border-1px">
+            <li @click="selectFood(food, $event)" v-for="(food, index) in item.foods" :key="index" class="food-item border-1px">
               <div class="icon">
                 <img width="57" height="57" :src="food.icon">
               </div>
@@ -39,8 +39,9 @@
         </li>
       </ul>
     </div>
-    <shopcart ref="shopcart" :select-foods="selectFoods" :delivery-price="seller.deliveryPrice"
+    <shopcart @cart-add="_drop" ref="shopcart" :select-foods="selectFoods" :delivery-price="seller.deliveryPrice"
               :min-price="seller.minPrice"></shopcart>
+    <food :food="selectedFood" ref="food" @cart-add="_drop"></food>
   </div>
 </template>
 
@@ -48,6 +49,7 @@
   import BScroll from 'better-scroll';
   import shopcart from 'components/shopcart/shopcart';
   import cartcontrol from 'components/cartcontrol/cartcontrol';
+  import food from 'components/food/food';
 
   const ERR_OK = 0;
   export default {
@@ -60,7 +62,8 @@
       return {
         goods: [],
         listHeight: [],
-        scrollY: 0
+        scrollY: 0,
+        selectedFood: {}
       };
     },
     computed: {
@@ -131,14 +134,23 @@
         }
       },
       _drop(target) { // 在goods.vue定义 _drop方法将cartcontrol的传递过来target对象再传递给shopCart
+        console.log(target);
         this.$nextTick(() => { // 使用$nextTick优化体验,异步执行下落动画
           this.$refs.shopcart.drop(target); // 父组件goods通过.$refs属性访问shopCart子组件的drop方法
         });
+      },
+      selectFood(food, event) {
+        if (!event._constructed) {
+          return;
+        }
+        this.selectedFood = food;
+        this.$refs.food.show();
       }
     },
     components: {
       shopcart,
-      cartcontrol
+      cartcontrol,
+      food
     }
   };
 </script>

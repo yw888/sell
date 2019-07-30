@@ -42,7 +42,7 @@
                     <span>￥{{food.price*food.count}}</span>
                   </div>
                   <div class="cartcontrol-wrapper">
-                    <cartcontrol :food="food"></cartcontrol>
+                    <cartcontrol :food="food"  @cart-add="addFood"></cartcontrol>
                   </div>
                 </li>
               </ul>
@@ -229,6 +229,12 @@
           return;
         }
         window.alert(`支付${this.totalPrice}元`);
+      },
+      addFood(target) { // 跟add关联的addFood方法
+        if (!event._constructed) {
+          return;
+        }
+        this.$emit('cart-add', target);
       }
     },
     components: {
